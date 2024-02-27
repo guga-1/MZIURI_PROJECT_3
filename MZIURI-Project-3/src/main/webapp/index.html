@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Store</title>
+	<script>
+		function purchaseProduct(productId, productName, productPrice, productAvailability) {
+            var quantity = prompt("Enter quantity for " + productName + ":");
+            if (quantity != null && quantity != "") {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "ProductServlet", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            alert("Purchase successful!");
+                            window.close();
+                        } else {
+                            alert("Your purchase has failed!");
+                        }
+                    }
+                };
+                var data = {
+                    productId: productId,
+                    quantity: quantity
+                };
+                xhr.send(JSON.stringify(data));
+            }
+        }
+	</script>
+</head>
+<body>
+<h1>Products</h1>
+<ul id="productList">
+</ul>
+
+<script>
+	// Assuming products are fetched from StoreServlet and populated dynamically
+    var products = [
+        { id: 1, name: "Product 1", price: 10.99, availability: "In Stock" },
+        { id: 2, name: "Product 2", price: 20.49, availability: "Out of Stock" },
+        { id: 3, name: "Product 3", price: 15.99, availability: "In Stock" }
+    ];
+
+    var productList = document.getElementById("productList");
+    products.forEach(function (product) {
+        var li = document.createElement("li");
+        li.textContent = product.name + " - $" + product.price + " - " + product.availability;
+        var purchaseButton = document.createElement("button");
+        purchaseButton.textContent = "Purchase";
+        purchaseButton.onclick = function () {
+            purchaseProduct(product.id, product.name, product.price, product.availability);
+        };
+        li.appendChild(purchaseButton);
+        productList.appendChild(li);
+    });
+</script>
+</body>
+</html>
